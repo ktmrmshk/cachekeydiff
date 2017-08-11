@@ -7,7 +7,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 AKAM_PRAGMA='akamai-x-get-request-id, akamai-x-cache-on, akamai-x-cache-remote-on, akamai-x-check-cacheable,akamai-x-get-cache-key, akamai-x-get-extracted-values, akamai-x-get-nonces, akamai-x-get-ssl-client-session-id, akamai-x-get-true-cache-key, akamai-x-serial-no, akamai-x-feo-trace'
 AKAM_CHDR=['x-cache-key', 'x-true-cache-key', 'x-check-cacheable', 'x-akamai-staging']
-DEFAULT_CHDR=['content-encoding', 'etag', 'server', 'content-length', 'last-modified', 'content-type', 'cache-control', 'edge-control', 'expires']
+DEFAULT_CHDR=['location', 'content-encoding', 'etag', 'server', 'content-length', 'last-modified', 'content-type', 'cache-control', 'edge-control', 'expires']
 
 
 class Actor(object):
@@ -124,8 +124,6 @@ class Tester(object):
     # print: target, prod, prod_code, stg, stg_code, result
     print('{}, {}, {}, {}, {}, {}'.format(prod_actor.req.request.url, prod_location, prod_actor.req.status_code, stg_location, stg_actor.req.status_code, ret))
 
-
-
   def redirect2(self, testcasefile, query=''):
     rows=[]
     with open(testcasefile) as f:
@@ -138,14 +136,38 @@ class Tester(object):
       #self.__redirect(r+query, self.prod, self.stg)
       self.__redirect(r[0], {r[3].rstrip(): 'users/omura/fund_touraku'}, self.prod, self.stg)
 
+  def diff(self, testcasefile):
+    diffcnt=0
+    cnt=0
+    with open(testcasefile) as f:
+      for l in f:
+        url = l.strip()
+        if url == '':
+          continue
+        
+        print(url)
+        ret = self._diff_header(url, self.prod, self.stg)
+        for d in ret['diff']:
+          print('  >>', d, ret[d])
+        else:
+          print()
+        if len(ret['diff']) != 0:
+          diffcnt+=1
+        cnt+=1
+      else:
+        print('{} diffs out of {} tests'.format(diffcnt, cnt))
+  
+
   def _diff_header(self, url, prod_actor, stg_actor, hdrs=[]):
     '''
     hdrs: list: [ 'etag', 'cache-control']
     result:
     ret['date']['prod'] = 'abc123'
     ret['date']['match'] = true
+    ret['diff'] = ['etag', 'server']
     {
       'status' : { 'prod': '200' , 'stg': '200', 'match': 'true'],
+      'diff' : ['etag', 'server']
     }
     '''
     
@@ -153,14 +175,14 @@ class Tester(object):
     stg_actor.get(url, allow_redirects=False)
     #for k,v in stg_actor.req.headers.items():
     #  print( '{}: {}'.format(k, v) )
+    diff=[]
     ret={}
-    
     ret['status_code'] = { 'prod': prod_actor.req.status_code, 'stg': stg_actor.req.status_code}
     if prod_actor.req.status_code == stg_actor.req.status_code:
       ret['status_code']['match'] = True
     else:
       ret['status_code']['match'] = False
-
+      diff.append('status_code')
 
     chdr = AKAM_CHDR + DEFAULT_CHDR
     for h in hdrs:
@@ -182,10 +204,15 @@ class Tester(object):
         cret['match'] = True
       else:
         cret['match'] = False
+        if h != 'x-akamai-staging':
+          diff.append(h)
+          
       ret[h] = cret
+      ret['diff'] = diff
 
-    print(json.dumps(ret, indent=2))
+    #print(json.dumps(ret, indent=2))
     #stg_actor.dump()
+    return ret
     
 if __name__ == '__main__':
   #a=Actor('www.omura.co.jp.edgekey-staging.net')
@@ -197,6 +224,9 @@ if __name__ == '__main__':
 
   
   t=Tester('www.wakodo.co.jp', 'www.wakodo.co.jp.edgekey-staging.net')
-  t._diff_header('http://www.wakodo.co.jp/', t.prod, t.stg)
+  #t._diff_header('http://www.wakodo.co.jp/?id=123', t.prod, t.stg)
+  #t._diff_header('http://www-stg.nomura.co.jp/market/movie/customer/summer2.html', t.prod, t.stg)
 
+  t.diff('testcase.txt')
   
+
