@@ -1,6 +1,6 @@
 from html.parser import HTMLParser
 from urllib.parse import urljoin
-
+import requests
 
 g_links=[]
 class Htmlp(HTMLParser):
@@ -33,27 +33,35 @@ class Hp(object):
   def __init__(self):
     self.links=[]
 
-  def parselink(self, html):
+  def parselink(self, html, url):
     hp = Htmlp()
     hp.feed(html)
-    print(g_links)
-    #print(html)
+    #print(g_links)
     self.links = list(g_links)
+    for l in g_links:
+      if urljoin(url, l) not in self.links:
+        self.links.append( urljoin(url, l) )
   
-  def dump(self, base=''):
-    print('-')
+  def dump(self):
     for l in self.links:
-      print( urljoin(base, l) )
+      print( l )
 
+  def parsePage(self, url):
+    r=requests.get(url, timeout=1.0)
+    if r.status_code == 200 and 'text/html' in r.headers['content-type']:
+      html=r.content.decode('utf-8')
+      self.parselink(html, r.request.url)
+    
 
 if __name__ == '__main__':
   html=''
   with open('index.html') as f:
     html = f.read()
   
-  base='https://www.ins.com/'
+  base='https://www.jins.com/'
   hp=Hp()
-  hp.parselink(html)
-  hp.dump(base)
+  #hp.parselink(html)
+  hp.parsePage(base)
+  hp.dump()
 
 
