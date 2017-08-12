@@ -3,11 +3,13 @@ import urllib3
 import csv
 import re
 import json
+import htmlp, rname
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 AKAM_PRAGMA='akamai-x-get-request-id, akamai-x-cache-on, akamai-x-cache-remote-on, akamai-x-check-cacheable,akamai-x-get-cache-key, akamai-x-get-extracted-values, akamai-x-get-nonces, akamai-x-get-ssl-client-session-id, akamai-x-get-true-cache-key, akamai-x-serial-no, akamai-x-feo-trace'
 AKAM_CHDR=['x-cache-key', 'x-true-cache-key', 'x-check-cacheable', 'x-akamai-staging']
-DEFAULT_CHDR=['location', 'content-encoding', 'etag', 'server', 'content-length', 'last-modified', 'content-type', 'cache-control', 'edge-control', 'expires']
+DEFAULT_CHDR=['location', 'content-encoding', 'etag', 'server', 'content-length', 'last-modified', 'content-type', 'cache-control', 'edge-control']
 
 
 class Actor(object):
@@ -136,27 +138,32 @@ class Tester(object):
       #self.__redirect(r+query, self.prod, self.stg)
       self.__redirect(r[0], {r[3].rstrip(): 'users/omura/fund_touraku'}, self.prod, self.stg)
 
-  def diff(self, testcasefile):
+  def diff(self, urllist):
     diffcnt=0
     cnt=0
+    for url in urllist:
+      print(url)
+      ret = self._diff_header(url, self.prod, self.stg)
+      for d in ret['diff']:
+        print('  >>', d, ret[d])
+      else:
+        print()
+      if len(ret['diff']) != 0:
+        diffcnt+=1
+      cnt+=1
+    else:
+      print('{} diffs out of {} tests'.format(diffcnt, cnt))
+  
+  def diff_fromfile(self, testcasefile):
+    urllist=[]
     with open(testcasefile) as f:
       for l in f:
         url = l.strip()
         if url == '':
           continue
         
-        print(url)
-        ret = self._diff_header(url, self.prod, self.stg)
-        for d in ret['diff']:
-          print('  >>', d, ret[d])
-        else:
-          print()
-        if len(ret['diff']) != 0:
-          diffcnt+=1
-        cnt+=1
-      else:
-        print('{} diffs out of {} tests'.format(diffcnt, cnt))
-  
+        urllist.append(url)
+      self.diff(urllist)
 
   def _diff_header(self, url, prod_actor, stg_actor, hdrs=[]):
     '''
@@ -223,10 +230,19 @@ if __name__ == '__main__':
   #t.redirect2('redirectlist_q.txt', '?abc=123')
 
   
-  t=Tester('www.wakodo.co.jp', 'www.wakodo.co.jp.edgekey-staging.net')
+  #t=Tester('www.wakodo.co.jp', 'www.wakodo.co.jp.edgekey-staging.net')
   #t._diff_header('http://www.wakodo.co.jp/?id=123', t.prod, t.stg)
   #t._diff_header('http://www-stg.nomura.co.jp/market/movie/customer/summer2.html', t.prod, t.stg)
-
-  t.diff('testcase.txt')
+  #t.diff_fromfile('testcase.txt')
   
+  hostname='www.jins.com'
+  proto='https://'
+  rn=rname.rname()
+  prod, stg = rn.get_akname('www.jins.com')
+
+  hp=htmlp.Hp()
+  hp.parsePage(proto+hostname)
+
+  t=Tester(prod, stg)
+  t.diff(hp.links)
 
