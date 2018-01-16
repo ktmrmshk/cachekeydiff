@@ -34,17 +34,17 @@
             </div>
             <div class="form-group">
                <label for="serverA">ServerA</label>
-               <input type="password" class="form-control" id="serverA">
+               <input type="text" class="form-control" id="serverA">
             </div>
             <div class="form-group">
                <label for="serverB">ServerB</label>
-               <input type="password" class="form-control" id="serverB">
+               <input type="text" class="form-control" id="serverB">
             </div>
             <div class="form-group">
                <label for="urllist">URL List</label>
                <textarea class="form-control" rows="5" id="urllist"></textarea>
             </div>
-            <button type="button" class="btn">Get Server Names</button>
+            <button type="button" class="btn" id="get_server_names">Get Server Names</button>
             <button type="button" class="btn">Get URLs</button>
             <button type="button" class="btn btn-primary">Diff</button>
          </form>
@@ -53,10 +53,10 @@
       <div class="container">
          <h3> Result </h3>
          <ul>
-            <li>ServerA: www.jins.com.edgekey.net -> d2.123.akamai.net -> 1.2.3.4</li>
-            <li>ServerB: www.jins.com.edgekey-staging.net -> d2.123.akamai.net -> 1.2.3.4</li>
+            <li>ServerA: www.jins.com.edgekey.net - d2.123.akamai.net - 1.2.3.4</li>
+            <li>ServerB: www.jins.com.edgekey-staging.net - d2.123.akamai.net - 1.2.3.4</li>
          </ul>
-         <table class="table table-striped">
+         <table class="table table-striped table-sm">
             <thead>
                <tr>
                   <th>#</th>
@@ -126,7 +126,19 @@
       </div>
       <script>
          $(document).ready(function(){
-             $('[data-toggle="tooltip"]').tooltip();   
+             $('[data-toggle="tooltip"]').tooltip();
+
+             $('#get_server_names').click(function(){
+               //alert( $("#hostname").val());
+               //$("#serverA").val( $("#hostname").val() );
+               var dp = $("#hostname").val();
+               var path = '/' + dp + '/edgehostname/';
+               $.get(path, function(data, status){
+                 //alert(data.edgehostname.prod + ':' + status);
+                 $("#serverA").val(data.edgehostname.stg);
+                 $("#serverB").val(data.edgehostname.prod);
+               });
+             });
          });
       </script>
    </body>
