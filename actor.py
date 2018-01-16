@@ -153,7 +153,8 @@ class Tester(object):
       cnt+=1
     else:
       print('{} diffs out of {} tests'.format(diffcnt, cnt))
-  
+    return ret
+
   def diff_fromfile(self, testcasefile):
     urllist=[]
     with open(testcasefile) as f:

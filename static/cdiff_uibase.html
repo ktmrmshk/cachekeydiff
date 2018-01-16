@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>Bootstrap Example</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+      <style>
+         .tooltip-inner {
+         white-space:nowrap;
+         max-width:none;
+         }
+      </style>
+   </head>
+   <body>
+      <!--
+         <div class="jumbotron text-center">
+           <h1>cdiff</h1>
+           <p>Resize this responsive page to see the effect!</p> 
+         </div>
+         -->
+      <div class="container">
+         <h1>cdiff</h1>
+         <!--
+            <p>The form below contains two input elements; one of type text and one of type password:</p>
+            -->
+         <form id="cdiffinput">
+            <div class="form-group">
+               <label for="hostname">Hostname:</label>
+               <input type="text" class="form-control" id="hostname">
+            </div>
+            <div class="form-group">
+               <label for="serverA">ServerA</label>
+               <input type="password" class="form-control" id="serverA">
+            </div>
+            <div class="form-group">
+               <label for="serverB">ServerB</label>
+               <input type="password" class="form-control" id="serverB">
+            </div>
+            <div class="form-group">
+               <label for="urllist">URL List</label>
+               <textarea class="form-control" rows="5" id="urllist"></textarea>
+            </div>
+            <button type="button" class="btn">Get Server Names</button>
+            <button type="button" class="btn">Get URLs</button>
+            <button type="button" class="btn btn-primary">Diff</button>
+         </form>
+      </div>
+      <hr>
+      <div class="container">
+         <h3> Result </h3>
+         <ul>
+            <li>ServerA: www.jins.com.edgekey.net -> d2.123.akamai.net -> 1.2.3.4</li>
+            <li>ServerB: www.jins.com.edgekey-staging.net -> d2.123.akamai.net -> 1.2.3.4</li>
+         </ul>
+         <table class="table table-striped">
+            <thead>
+               <tr>
+                  <th>#</th>
+                  <th>URL</th>
+                  <th>Result</th>
+               </tr>
+            </thead>
+            <tbody>
+               <tr>
+                  <td>2</td>
+                  <td class="small">https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_button_group_size&stacked=h</td>
+                  <td>
+                     <a href="#" data-toggle="tooltip" data-container="body" data-html="true" data-placement="bottom" title="<tr><td><b>ServerA:</b> </td><td>S/D/7390/437330/000/internet-waf001-jins-vpc-135608164</td></tr><tr><td>ServerB</td><td>S/D/7390/437330/000/internet-waf001-jins-vpc-135608164</td></tr>">
+                     <span class="badge badge-success">X-True-Cache-Key</span>
+                     </a>
+                     <span class="badge badge-success">ETAG</span>
+                     <br /><a href="#"  class="small" data-toggle="collapse" data-target="#demo">Details</a>
+                     <div id="demo" class="collapse">
+                        <pre class="small">
+{
+  "squadName": "Super hero squad",
+  "homeTown": "Metro City",
+  "formed": 2016,
+  "secretBase": "Super tower",
+  "active": true,
+  "members": [
+    {
+      "name": "Molecule Man",
+      "age": 29,
+      "secretIdentity": "Dan Jukes",
+      "powers": [
+        "Radiation resistance",
+        "Turning tiny",
+        "Radiation blast"
+      ]
+    },
+    {
+      "name": "Madame Uppercut",
+      "age": 39,
+      "secretIdentity": "Jane Wilson",
+      "powers": [
+        "Million tonne punch",
+        "Damage resistance",
+        "Superhuman reflexes"
+      ]
+    },
+    {
+      "name": "Eternal Flame",
+      "age": 1000000,
+      "secretIdentity": "Unknown",
+      "powers": [
+        "Immortality",
+        "Heat Immunity",
+        "Inferno",
+        "Teleportation",
+        "Interdimensional travel"
+      ]
+    }
+  ]
+}
+</pre>
+                     </div>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+      <script>
+         $(document).ready(function(){
+             $('[data-toggle="tooltip"]').tooltip();   
+         });
+      </script>
+   </body>
+</html>
