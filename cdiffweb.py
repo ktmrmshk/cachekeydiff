@@ -1,6 +1,6 @@
 from flask import *
 import json
-import actor, rname
+import actor, rname, htmlp
 
 
 app = Flask(__name__)
@@ -13,6 +13,9 @@ def index():
 def basepage():
     return send_from_directory('static', 'cdiff_uibase.html')
 
+@app.route('/cdiff/<path:filename>')
+def static_file(filename):
+    return send_from_directory('static', filename)
 
 @app.route('/cdiff/debug/', methods=['GET'])
 def cdiff_get():
@@ -40,6 +43,15 @@ def get_edgehostname(dp):
     ret['edgehostname']={'prod': prod, 'stg': stg}
 
     return jsonify( ret )
+
+@app.route('/cdiff/urllist/')
+def get_urllist():
+    assert 'basepage' in request.args
+    hp=htmlp.Hp()
+    hp.parsePage(request.args['basepage'])
+    return jsonify( hp.links )
+
+
 
 
 

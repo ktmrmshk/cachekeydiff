@@ -8,6 +8,7 @@
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+      <script src="cdiff_ui.js"></script>
       <style>
          .tooltip-inner {
          white-space:nowrap;
@@ -28,25 +29,34 @@
             <p>The form below contains two input elements; one of type text and one of type password:</p>
             -->
          <form id="cdiffinput">
-            <div class="form-group">
+            <div class="form-group input-group-sm">
+               <label for="protocol">protocol:</label>
+               <select class="form-control input-sm" id="protocol">
+                 <option>http://</option>
+                 <option selected>https://</option>
+               </select>
+            </div>
+            <div class="form-group input-group-sm">
                <label for="hostname">Hostname:</label>
-               <input type="text" class="form-control" id="hostname">
+               <input type="text" class="form-control input-sm" id="hostname">
             </div>
             <div class="form-group">
+            <button type="button" class="btn btn-primary" id="get_server_names">Get Server Names</button>
+            <button type="button" class="btn btn-primary" id="get_urls">Get URLs</button>
+            </div>
+            <div class="form-group input-group-sm">
                <label for="serverA">ServerA</label>
-               <input type="text" class="form-control" id="serverA">
+               <input type="text" class="form-control input-sm" id="serverA">
             </div>
-            <div class="form-group">
+            <div class="form-group input-group-sm">
                <label for="serverB">ServerB</label>
-               <input type="text" class="form-control" id="serverB">
+               <input type="text" class="form-control input-sm" id="serverB">
             </div>
-            <div class="form-group">
+            <div class="form-group input-group-sm mb-1">
                <label for="urllist">URL List</label>
                <textarea class="form-control" rows="5" id="urllist"></textarea>
             </div>
-            <button type="button" class="btn" id="get_server_names">Get Server Names</button>
-            <button type="button" class="btn">Get URLs</button>
-            <button type="button" class="btn btn-primary">Diff</button>
+            <button type="button" class="btn btn-primary" id='dodiff'>Diff</button>
          </form>
       </div>
       <hr>
@@ -124,22 +134,5 @@
             </tbody>
          </table>
       </div>
-      <script>
-         $(document).ready(function(){
-             $('[data-toggle="tooltip"]').tooltip();
-
-             $('#get_server_names').click(function(){
-               //alert( $("#hostname").val());
-               //$("#serverA").val( $("#hostname").val() );
-               var dp = $("#hostname").val();
-               var path = '/' + dp + '/edgehostname/';
-               $.get(path, function(data, status){
-                 //alert(data.edgehostname.prod + ':' + status);
-                 $("#serverA").val(data.edgehostname.stg);
-                 $("#serverB").val(data.edgehostname.prod);
-               });
-             });
-         });
-      </script>
    </body>
 </html>
