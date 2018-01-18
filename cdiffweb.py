@@ -33,6 +33,20 @@ def cdiff_get():
     return ret
     #return 'ok'
 
+@app.route('/cdiff/diff/')
+def cdiff_diff():
+    url=request.args['url']
+    prod=request.args['serverA']
+    stg=request.args['serverB']
+    t=actor.Tester(prod, stg)
+    res=t.diff([url])
+
+    ret = make_response(jsonify( res ))
+    ret.status_code = 200
+
+    return ret
+
+
 @app.route('/<dp>/edgehostname/')
 def get_edgehostname(dp):
     print('{}'.format(dp))
