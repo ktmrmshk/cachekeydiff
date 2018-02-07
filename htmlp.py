@@ -56,7 +56,8 @@ class Hp(object):
     if url != r.request.url:
       self.visited.append(r.request.url)
     if r.status_code == 200 and 'text/html' in r.headers['content-type']:
-      html=r.content.decode('utf-8')
+      #print (r.encoding)
+      html=r.content.decode(r.encoding)
       self.parselink(html, r.request.url)
     
 
